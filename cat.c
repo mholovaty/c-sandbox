@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 {
     const char *name = argv[0];
 
-    int fd = 0;
+    int fd = STDIN_FILENO;
 
     if (argc > 1)
     {
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	if (nr == -1)
 	    return error(name, strerror(errno), '\0');
 
-	ssize_t nw = write(1, buf, nr);
+	ssize_t nw = write(STDOUT_FILENO, buf, nr);
 
 	if (nw == -1)
 	    return error(name, strerror(errno), '\0');
