@@ -1,17 +1,14 @@
 #include <stdio.h>
-#include <stdbool.h>
-
 
 int main()
 {
-    int c, b;
+    int c, b = '\n';
 
     while((c = getchar()) != EOF) {
+	if ((c != ' ') ||
+	    ((b != ' ') && (b != '\n')))
+	    putchar(c);
 
-	if (c == ' ' && b == ' ')
-	    continue;
-
-	putchar(c);
 	b = c;
     }
 
