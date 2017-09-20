@@ -50,22 +50,31 @@ int main(int argc, char *argv[])
 	    return error(name, path, strerror(errno), '\0');
     }
 
-    char buf[4096];
-    size_t count = sizeof(buf);
-
+    char rbuf[4096];
+    size_t rbuf_size = sizeof(rbuf);
     ssize_t nr;
 
-    while ((nr = read(fd, buf, count)) != 0)
+    while ((nr = read(fd, rbuf, rbuf_size)) != 0)
     {
 	if (nr == -1)
 	    return error(name, strerror(errno), '\0');
 
-	ssize_t nw = write(STDOUT_FILENO, buf, nr);
+	char *wbuf = rbuf;
+	ssize_t nw;
 
-	if (nw == -1)
-	    return error(name, strerror(errno), '\0');
-	if (nw != nr)
-	    return error(name, "partial write", "not supported", '\0');
+	while (nr !=0 && (nw = write(STDOUT_FILENO, wbuf, nr)) != 0)
+	{
+	    if (nw == -1)
+	    {
+		if (errno == EINTR)
+		    continue;
+
+		return error(name, strerror(errno), '\0');
+	    };
+
+	    nr -= nw;
+	    wbuf += nw;
+	};
     };
 
     if (close(fd) == -1)
